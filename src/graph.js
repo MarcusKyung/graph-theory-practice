@@ -70,4 +70,50 @@ export default class Graph {
       this.adjacencyList.delete(name);
     }
   }
+
+  depthFirstReachable(startingNode, targetNode) {
+    if((!this.adjacencyList.has(startingNode)) || (!this.adjacencyList.has(targetNode))) {
+      return false;  // If either the startingNode or targetNode is not in the graph, return false.
+    }
+    let stack = [startingNode]; //creates stack with startingNode as only element
+    let traversedNodes = new Set(); //This is creating a flag on nodes that have been traversed. We want this to be temporary which is why it is not a property on the node iteself. Making it a set is smart since they don't have duplicates
+    while (stack.length) { //while stack is not empty
+      const currentNode = stack.shift(); //Takes value of first element in stack and removes it from stack. Each time the while loop runs it is created anew
+      if (currentNode === targetNode) {
+        return true;
+      } else {
+        traversedNodes.add(currentNode); //Flags node to show it's been traversed
+        const adjacencyList = this.adjacencyList.get(currentNode); //Pulls adjacency list of currentNode
+        adjacencyList.forEach(function(node) { //finds all nodes connected to currentNode and adds them to stack
+          if (!traversedNodes.has(node)) { //This is a check to see if a node has been visited or traversed already. 
+            stack.unshift(node); //If NOT it will be added to the stack using unshift (add to beginning)
+          }
+        });
+      }
+    }
+    return false; //If stack is empty and targetNode has not been found, return false. This is the case when the target node is outside of the graph
+  }
+
+  breadthFirstReachable(startingNode, targetNode) {
+    if ((!this.adjacencyList.has(startingNode)) || (!this.adjacencyList.has(targetNode))) {
+      return false;
+    }
+    let queue = [startingNode]; //using queue now versus stack
+    let traversedNodes = new Set();
+    while (queue.length) {
+      const currentNode = queue.shift();
+      if (currentNode === targetNode) {
+        return true;
+      } else {
+        traversedNodes.add(currentNode);
+        const adjacencyList = this.adjacencyList.get(currentNode);
+        adjacencyList.forEach(function(node) {
+          if (!traversedNodes.has(node)) {
+            queue.push(node); //using push now versus unshift so that the first node in the queue is the first node in the adjacency list
+          }
+        });
+      }
+    }
+    return false;
+  }
 }
